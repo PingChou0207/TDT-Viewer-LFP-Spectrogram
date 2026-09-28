@@ -1,0 +1,20 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+*.log
+
+# Virtual environments and local caches
+.venv/
+venv/
+.pyinstaller-cache/
+.pytest_cache/
+
+# PyInstaller output and packaged applications
+build/
+dist/
+*.app/
+*.exe
+*.zip
+
+# Viewer sessions may contain large cached data and use pickle
+*.tdtv
