@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 project_root = Path(SPECPATH)
-entry_script = project_root / "src" / "tdt_viewer_lfp_spectrogram_v4.py"
+entry_script = project_root / "src" / "TDT_viewer_video_spectrogram_v4.py"
 
 a = Analysis(
     [str(entry_script)],
@@ -32,7 +32,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="TDT Viewer LFP Spectrogram v4",
+    name="TDT_viewer_video_spectrogram_v4",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -52,17 +52,17 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name="TDT Viewer LFP Spectrogram v4",
+    name="TDT_viewer_video_spectrogram_v4",
 )
 
 if sys.platform == "darwin":
     app = BUNDLE(
         coll,
-        name="TDT Viewer LFP Spectrogram v4.app",
+        name="TDT_viewer_video_spectrogram_v4.app",
         icon=None,
-        bundle_identifier="com.pingchou.tdt-viewer-lfp-spectrogram-v4",
+        bundle_identifier="com.pingchou.tdt-viewer-video-spectrogram-v4",
         info_plist={
-            "CFBundleDisplayName": "TDT Viewer LFP Spectrogram v4",
+            "CFBundleDisplayName": "TDT_viewer_video_spectrogram_v4",
             "CFBundleShortVersionString": "4.0.0",
             "CFBundleVersion": "4.0.0",
             "NSHighResolutionCapable": True,

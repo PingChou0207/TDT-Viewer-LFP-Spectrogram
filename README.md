@@ -1,4 +1,4 @@
-# TDT Viewer LFP Spectrogram v4
+# TDT_viewer_video_spectrogram_v4
 
 A read-only desktop viewer for TDT blocks with synchronized epoch events, multi-channel LFP traces, LFP spectrograms, and MU traces.
 
@@ -27,7 +27,7 @@ Python 3.12 is recommended.
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 python -m pip install -r requirements-build.txt
-python src/tdt_viewer_lfp_spectrogram_v4.py
+python src/TDT_viewer_video_spectrogram_v4.py
 ```
 
 ## Build desktop applications
@@ -48,7 +48,7 @@ On a Windows 10/11 x64 computer with Python 3.12, double-click `build_windows.ba
 
 ### GitHub Actions
 
-Run the **Build desktop apps** workflow manually, or push a tag beginning with `v`, to build macOS and Windows artifacts in GitHub Actions.
+Run the **Build desktop apps** workflow manually, push to `main`, or push a tag beginning with `v` to build macOS and Windows artifacts in GitHub Actions.
 
 ## Documentation
 

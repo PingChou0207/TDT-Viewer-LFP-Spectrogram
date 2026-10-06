@@ -14,10 +14,10 @@ fi
 export PYQTGRAPH_QT_LIB=PySide6
 export PYINSTALLER_CONFIG_DIR="$PWD/.pyinstaller-cache"
 
-"$PYTHON_BIN" -m PyInstaller --noconfirm --clean TDT_Viewer_LFP_Spectrogram_v4.spec
+"$PYTHON_BIN" -m PyInstaller --noconfirm --clean TDT_viewer_video_spectrogram_v4.spec
 
-APP_PATH="$PWD/dist/TDT Viewer LFP Spectrogram v4.app"
-ZIP_PATH="$PWD/dist/TDT_Viewer_LFP_Spectrogram_v4_macOS_arm64.zip"
+APP_PATH="$PWD/dist/TDT_viewer_video_spectrogram_v4.app"
+ZIP_PATH="$PWD/dist/TDT_viewer_video_spectrogram_v4_macOS_arm64.zip"
 if [[ ! -d "$APP_PATH" ]]; then
     echo "ERROR: Expected app was not created: $APP_PATH"
     exit 1

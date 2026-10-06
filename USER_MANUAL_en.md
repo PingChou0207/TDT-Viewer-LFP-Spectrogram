@@ -1,10 +1,10 @@
-# TDT Viewer LFP Spectrogram v4 - Complete User Manual
+# TDT_viewer_video_spectrogram_v4 - Complete User Manual
 
 Version 4.0 | Updated: 2026-10-06
 
 ## 1. Purpose
 
-TDT Viewer LFP Spectrogram v4 is a read-only desktop analysis and visualization tool. It loads a TDT block and synchronizes Epoch events, multi-channel LFP traces, multi-channel LFP spectrograms, and multi-channel MU traces on one time axis.
+TDT_viewer_video_spectrogram_v4 is a read-only desktop analysis and visualization tool. It loads a TDT block and synchronizes Epoch events, multi-channel LFP traces, multi-channel LFP spectrograms, and multi-channel MU traces on one time axis.
 
 The application does not modify the original TDT block. Display preferences can be retained automatically, while a `.tdtv` session can store cached data and the complete working state.
 
@@ -13,14 +13,14 @@ The application does not modify the original TDT block. Display preferences can 
 ### macOS
 
 - The supplied build is for Apple Silicon arm64.
-- Extract the ZIP and move `TDT Viewer LFP Spectrogram v4.app` to Applications.
+- Extract the ZIP and move `TDT_viewer_video_spectrogram_v4.app` to Applications.
 - On first launch, Control-click or right-click the App and select Open.
 - The build is ad-hoc signed and is not Apple-notarized.
 
 ### Windows
 
 - Windows 10/11 x64 is supported.
-- Extract the complete ZIP before opening `TDT Viewer LFP Spectrogram v4.exe`.
+- Extract the complete ZIP before opening `TDT_viewer_video_spectrogram_v4.exe`.
 - Keep the EXE and `_internal` folder together.
 
 ## 3. Quick Start
@@ -228,7 +228,7 @@ For display, the first time-bin color cell extends about `Δt/2` to the left of 
 1. Install 64-bit Python 3.12 and select Add Python to PATH.
 2. Copy the complete project folder to Windows.
 3. Double-click `build_windows.bat`.
-4. Use `dist/TDT_Viewer_LFP_Spectrogram_v4_Windows_x64.zip`.
+4. Use `dist/TDT_viewer_video_spectrogram_v4_Windows_x64.zip`.
 
 The included `.github/workflows/build-apps.yml` can also build a Windows x64 artifact on GitHub Actions.
 

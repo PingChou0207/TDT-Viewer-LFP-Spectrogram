@@ -1,10 +1,10 @@
-# TDT Viewer LFP Spectrogram v4 完整使用手冊
+# TDT_viewer_video_spectrogram_v4 完整使用手冊
 
 版本 4.0｜更新日期：2026-10-06
 
 ## 1. 軟體用途
 
-TDT Viewer LFP Spectrogram v4 是唯讀的桌面分析與檢視工具，可載入 TDT block，在同一時間軸同步顯示 Epoch events、多通道 LFP traces、多通道 LFP spectrograms 與多通道 MU traces。
+TDT_viewer_video_spectrogram_v4 是唯讀的桌面分析與檢視工具，可載入 TDT block，在同一時間軸同步顯示 Epoch events、多通道 LFP traces、多通道 LFP spectrograms 與多通道 MU traces。
 
 程式不修改原始 TDT block。顯示設定可自動保留；`.tdtv` session 另可保存資料快取與完整工作狀態。
 
@@ -13,14 +13,14 @@ TDT Viewer LFP Spectrogram v4 是唯讀的桌面分析與檢視工具，可載�
 ### macOS
 
 - 目前提供 Apple Silicon arm64 版本。
-- 解壓縮 ZIP，將 `TDT Viewer LFP Spectrogram v4.app` 拖到 Applications。
+- 解壓縮 ZIP，將 `TDT_viewer_video_spectrogram_v4.app` 拖到 Applications。
 - 第一次啟動時對 App 按 Control-click 或右鍵，選擇 Open。
 - 本版為 ad-hoc signed，未經 Apple notarization。
 
 ### Windows
 
 - 適用 Windows 10/11 x64。
-- 解壓完整 ZIP，再開啟 `TDT Viewer LFP Spectrogram v4.exe`。
+- 解壓完整 ZIP，再開啟 `TDT_viewer_video_spectrogram_v4.exe`。
 - EXE 旁的 `_internal` 資料夾不可刪除或分開移動。
 
 ## 3. 快速開始
@@ -267,14 +267,14 @@ Reset 會恢復主要 trace/display 預設值：5 秒 window、amplitude 1、gai
 | macOS 無法開啟 | Control-click App 選 Open；可信檔案仍受阻時移除 quarantine。 |
 | Windows 無法啟動 | 完整解壓 ZIP，保留 EXE 與 `_internal` 在同一資料夾。 |
 
-macOS quarantine 指令：`xattr -dr com.apple.quarantine "/Applications/TDT Viewer LFP Spectrogram v4.app"`
+macOS quarantine 指令：`xattr -dr com.apple.quarantine "/Applications/TDT_viewer_video_spectrogram_v4.app"`
 
 ## 19. Windows 原生建置
 
 1. 安裝 64-bit Python 3.12，勾選 Add Python to PATH。
 2. 將完整 project folder 複製到 Windows。
 3. Double-click `build_windows.bat`。
-4. 完成後使用 `dist/TDT_Viewer_LFP_Spectrogram_v4_Windows_x64.zip`。
+4. 完成後使用 `dist/TDT_viewer_video_spectrogram_v4_Windows_x64.zip`。
 
 也可將 project 推送到 GitHub，執行 `.github/workflows/build-apps.yml`，下載 Windows x64 artifact。
 
