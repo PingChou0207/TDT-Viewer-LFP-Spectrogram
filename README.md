@@ -1,10 +1,10 @@
-# TDT Viewer LFP Spectrogram v3
+# TDT Viewer LFP Spectrogram v4
 
 A read-only desktop viewer for TDT blocks with synchronized epoch events, multi-channel LFP traces, LFP spectrograms, and MU traces.
 
 ## Features
 
-- Synchronized Epoch, LFP, Spectrogram, and MU panels
+- Synchronized Epoch, LFP, Spectrogram, and MU panels, with an optional Camera dock
 - Multi-channel spectrogram display with per-channel frequency ticks and color bar
 - Real power (`dB re 1 µV²/Hz`) and percentage-power modes
 - Configurable frequency range, 0.5 Hz default frequency resolution, and 0.5 s default maximum time step
@@ -14,6 +14,8 @@ A read-only desktop viewer for TDT blocks with synchronized epoch events, multi-
 - Adjustable panel heights, cursors, event navigation, gain normalization, and scale bars
 - PNG/JPEG and publication-resolution PNG export
 - Portable `.tdtv` sessions containing cached data and display state
+
+When a block contains both a `Cam#` epoc and matching `Cam#.avi` or `Cam#.mp4`, the **Camera** button opens a synchronized video preview. Use **Play/Pause** or **Frame** buttons to inspect frames. Synchronization follows the recorded epoc frame timestamps, not nominal video FPS. Video files are not embedded in `.tdtv` sessions; keep the original block available to reopen camera video.
 
 The viewer does not modify the selected TDT block.
 
@@ -25,7 +27,7 @@ Python 3.12 is recommended.
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 python -m pip install -r requirements-build.txt
-python src/tdt_viewer_lfp_spectrogram_v3.py
+python src/tdt_viewer_lfp_spectrogram_v4.py
 ```
 
 ## Build desktop applications
@@ -62,6 +64,7 @@ Important: `.tdtv` uses Python pickle and should only be opened from trusted sou
 - TDT data access: TDT Python SDK
 - Numerical and signal processing: Python, NumPy, SciPy
 - Desktop UI and plotting: PySide6, pyqtgraph
+- Camera decoding: OpenCV
 - Application packaging: PyInstaller
 
 TDT and NeuroExplorer are trademarks or product names of their respective owners. This independent application does not imply endorsement by either company.

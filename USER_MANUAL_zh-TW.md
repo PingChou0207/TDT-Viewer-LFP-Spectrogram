@@ -1,10 +1,10 @@
-# TDT Viewer LFP Spectrogram v3 完整使用手冊
+# TDT Viewer LFP Spectrogram v4 完整使用手冊
 
-版本 3.0｜更新日期：2026-09-26
+版本 4.0｜更新日期：2026-10-06
 
 ## 1. 軟體用途
 
-TDT Viewer LFP Spectrogram v3 是唯讀的桌面分析與檢視工具，可載入 TDT block，在同一時間軸同步顯示 Epoch events、多通道 LFP traces、多通道 LFP spectrograms 與多通道 MU traces。
+TDT Viewer LFP Spectrogram v4 是唯讀的桌面分析與檢視工具，可載入 TDT block，在同一時間軸同步顯示 Epoch events、多通道 LFP traces、多通道 LFP spectrograms 與多通道 MU traces。
 
 程式不修改原始 TDT block。顯示設定可自動保留；`.tdtv` session 另可保存資料快取與完整工作狀態。
 
@@ -13,14 +13,14 @@ TDT Viewer LFP Spectrogram v3 是唯讀的桌面分析與檢視工具，可載�
 ### macOS
 
 - 目前提供 Apple Silicon arm64 版本。
-- 解壓縮 ZIP，將 `TDT Viewer LFP Spectrogram v3.app` 拖到 Applications。
+- 解壓縮 ZIP，將 `TDT Viewer LFP Spectrogram v4.app` 拖到 Applications。
 - 第一次啟動時對 App 按 Control-click 或右鍵，選擇 Open。
 - 本版為 ad-hoc signed，未經 Apple notarization。
 
 ### Windows
 
 - 適用 Windows 10/11 x64。
-- 解壓完整 ZIP，再開啟 `TDT Viewer LFP Spectrogram v3.exe`。
+- 解壓完整 ZIP，再開啟 `TDT Viewer LFP Spectrogram v4.exe`。
 - EXE 旁的 `_internal` 資料夾不可刪除或分開移動。
 
 ## 3. 快速開始
@@ -48,6 +48,15 @@ TDT Viewer LFP Spectrogram v3 是唯讀的桌面分析與檢視工具，可載�
 | Status bar | 顯示 block path、gain、載入、複製與輸出狀態。 |
 
 可折疊區塊按一下標題即可展開或收合。
+
+### Camera 影片同步
+
+若 TDT block 同時包含 `Cam1`（或其他 `Cam#`）epoc 與對應的 `Cam1.avi`／`Cam1.mp4` 影片，左側 **Camera** 按鈕會啟用。按下後，影片視窗會停靠在圖表旁，可拖曳邊界調整寬度。多部 camera 可在影片視窗頂端切換。
+
+- 底部時間滑桿與時間欄位移動後，Camera 顯示該 TDT 時間點最近一格已記錄的影格；在第一個 camera timestamp 之前保持空白。
+- 在任一圖表雙擊，可預覽該時間的影格。影片視窗的 **◀ Frame**、**Frame ▶** 逐格跳轉，並同步圖表 cursor；**Play/Pause** 按 TDT 時間播放，cursor 會跟著移動。播放到視窗外時，圖表會自動移動時間範圍。
+- 對齊依 `Cam#` epoc 的 onset 與影格編號，而不是只用 AVI 標示的 fps。若影片尾端有多餘影格但沒有對應 timestamp，不將其視為同步資料。
+- `.tdtv` 會保存 camera timestamp 與原始 block 路徑，**不會嵌入大型影片檔**；從 session 恢復 camera 時仍須能存取原本的 AVI／MP4。
 
 ## 5. 頂端按鈕與資料管理
 
@@ -174,6 +183,32 @@ TDT Viewer LFP Spectrogram v3 是唯讀的桌面分析與檢視工具，可載�
 
 較小的 Max time step 只讓估計位置更密，不會縮短每個估計所整合的 window。例如 2 秒 window 即使 Δt 為 0.01 秒，每個 time bin 仍使用約 2 秒訊號。
 
+### 為什麼錄影起始處的 spectrogram 會留白？（數學與程式計算）
+
+Spectrogram 使用完整的 Hann 視窗計算 PSD，並將每個結果的時間標在該視窗的**中心**，不是視窗的左端。設分析取樣率為 `fs`、有效視窗樣本數為 `N`、相鄰視窗位移為 `H`，則約有
+
+`W = N / fs`，`Δt = H / fs`，`t_k = t₀ + W/2 + kΔt`。
+
+其中 `t₀` 是可讀取資料片段的起點，`t_k` 是第 `k` 個 STFT time bin 的中心。程式會讀取目前顯示範圍前後的額外資料，因此一般瀏覽錄影中段時，`t₀` 可以早於畫面的左緣；但在**整段錄影的起點**，讀取範圍會被限制在原始資料的 `start_time`，不會在起點之前補零或虛構訊號。第一個完整視窗必須累積約 `W` 秒的資料，所以第一個結果中心約在 `start_time + W/2`。
+
+程式計算方式可概括為：
+
+```python
+W_requested = max(STFT_window, 1 / Freq_resolution)
+N = min(max(8, round(STFT_window * fs), ceil(fs / Freq_resolution)), available_samples)
+NFFT = max(N, round(fs / Freq_resolution))
+H = N - noverlap  # overlap 會視 Overlap 和 Max time step 自動提高
+freq, rel_time, psd = scipy.signal.spectrogram(
+    samples, fs=fs, window="hann", nperseg=N, noverlap=noverlap,
+    nfft=NFFT, scaling="density", mode="psd"
+)
+absolute_time = segment_start + rel_time
+```
+
+上式的 `W_requested` 說明設定邏輯；實際 `N` 若受可用資料長度限制，視窗可能較短。`NFFT` 決定顯示頻率格點間距 `fs/NFFT`；補零可使格點更密，**不會**增加短資料本身的真實頻率辨識能力。
+
+顯示時，第一個 time bin 的色塊由中心向左延伸約 `Δt/2`，所以第一段顏色約從 `start_time + W/2 − Δt/2` 出現。以預設 `Freq resolution = 0.5 Hz`、`STFT window = 2 s`、`Overlap = 75%`、`Max time step = 0.5 s` 為例，`W ≈ 2 s`、`Δt ≈ 0.5 s`：第一個 PSD 標在約 `1.0 s`，色塊左緣約在 `0.75 s`。這段起始留白是完整視窗與中心時間標記造成的，**不代表原始 LFP 沒有資料**。若錄影很短、取樣率或 overlap 不同，實際位置以圖上顯示的 `window`、`Δt` 為準。
+
 ## 14. Spectrogram post-processing
 
 ### NeuroExplorer-compatible Gaussian smoothing
@@ -232,14 +267,14 @@ Reset 會恢復主要 trace/display 預設值：5 秒 window、amplitude 1、gai
 | macOS 無法開啟 | Control-click App 選 Open；可信檔案仍受阻時移除 quarantine。 |
 | Windows 無法啟動 | 完整解壓 ZIP，保留 EXE 與 `_internal` 在同一資料夾。 |
 
-macOS quarantine 指令：`xattr -dr com.apple.quarantine "/Applications/TDT Viewer LFP Spectrogram v3.app"`
+macOS quarantine 指令：`xattr -dr com.apple.quarantine "/Applications/TDT Viewer LFP Spectrogram v4.app"`
 
 ## 19. Windows 原生建置
 
 1. 安裝 64-bit Python 3.12，勾選 Add Python to PATH。
 2. 將完整 project folder 複製到 Windows。
 3. Double-click `build_windows.bat`。
-4. 完成後使用 `dist/TDT_Viewer_LFP_Spectrogram_v3_Windows_x64.zip`。
+4. 完成後使用 `dist/TDT_Viewer_LFP_Spectrogram_v4_Windows_x64.zip`。
 
 也可將 project 推送到 GitHub，執行 `.github/workflows/build-apps.yml`，下載 Windows x64 artifact。
 

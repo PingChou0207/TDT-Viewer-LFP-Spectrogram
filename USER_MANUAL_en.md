@@ -1,10 +1,10 @@
-# TDT Viewer LFP Spectrogram v3 - Complete User Manual
+# TDT Viewer LFP Spectrogram v4 - Complete User Manual
 
-Version 3.0 | Updated: 2026-09-26
+Version 4.0 | Updated: 2026-10-06
 
 ## 1. Purpose
 
-TDT Viewer LFP Spectrogram v3 is a read-only desktop analysis and visualization tool. It loads a TDT block and synchronizes Epoch events, multi-channel LFP traces, multi-channel LFP spectrograms, and multi-channel MU traces on one time axis.
+TDT Viewer LFP Spectrogram v4 is a read-only desktop analysis and visualization tool. It loads a TDT block and synchronizes Epoch events, multi-channel LFP traces, multi-channel LFP spectrograms, and multi-channel MU traces on one time axis.
 
 The application does not modify the original TDT block. Display preferences can be retained automatically, while a `.tdtv` session can store cached data and the complete working state.
 
@@ -13,14 +13,14 @@ The application does not modify the original TDT block. Display preferences can 
 ### macOS
 
 - The supplied build is for Apple Silicon arm64.
-- Extract the ZIP and move `TDT Viewer LFP Spectrogram v3.app` to Applications.
+- Extract the ZIP and move `TDT Viewer LFP Spectrogram v4.app` to Applications.
 - On first launch, Control-click or right-click the App and select Open.
 - The build is ad-hoc signed and is not Apple-notarized.
 
 ### Windows
 
 - Windows 10/11 x64 is supported.
-- Extract the complete ZIP before opening `TDT Viewer LFP Spectrogram v3.exe`.
+- Extract the complete ZIP before opening `TDT Viewer LFP Spectrogram v4.exe`.
 - Keep the EXE and `_internal` folder together.
 
 ## 3. Quick Start
@@ -45,6 +45,15 @@ The right side contains synchronized Epoch, LFP, Spectrogram, and MU panels from
 | Plot area | Synchronized Epoch, LFP, Spectrogram, and MU displays. |
 | Navigation bar | Show/hide settings, move through time, or enter the start time. |
 | Status bar | Block path, gain, load, copy, and export messages. |
+
+### Synchronized Camera Video
+
+If the TDT block contains a `Cam1` (or other `Cam#`) epoc and a matching `Cam1.avi` or `Cam1.mp4`, the **Camera** button becomes available. It opens a dock beside the plots; drag the dock boundary to resize it. Select another camera at the top of the dock when multiple cameras are present.
+
+- The time slider and time field show the most recent recorded frame at that TDT time. Before the first camera timestamp, the preview stays blank.
+- Double-click a plot to preview the frame at that time. **◀ Frame** and **Frame ▶** step through frames and update the plot cursor. **Play/Pause** advances on the TDT timeline; the plots move when playback leaves the visible window.
+- Synchronization uses `Cam#` epoc onsets and frame numbers, not the AVI's nominal FPS. Extra video frames at the end without timestamps are not treated as synchronized data.
+- `.tdtv` stores camera timestamps and the original block path, **not the large video file**. The AVI/MP4 must still be accessible when reopening a session.
 
 ## 5. Top Buttons and Data Management
 
@@ -152,6 +161,32 @@ If the STFT window is shorter than `1 / Freq resolution`, the application length
 
 A smaller time step produces denser estimates but does not shorten the STFT window used by each estimate.
 
+### Why is the spectrogram blank at the start? (Math and implementation)
+
+Each PSD estimate uses a complete Hann window, and its timestamp marks the **center** of that window, not its left edge. Let `fs` be the analysis sampling rate, `N` the effective window length in samples, and `H` the hop size. Approximately,
+
+`W = N / fs`, `Δt = H / fs`, and `t_k = t₀ + W/2 + kΔt`.
+
+Here `t₀` is the start of the data segment used for analysis and `t_k` is the center of STFT time bin `k`. The application reads additional data around the visible range, so `t₀` can precede the left edge when viewing the middle of a recording. At the **beginning of the recording**, however, reading stops at the source `start_time`: no signal is zero-padded or invented before it. The first complete window therefore has its center approximately at `start_time + W/2`.
+
+The relevant calculation is summarized below:
+
+```python
+W_requested = max(STFT_window, 1 / Freq_resolution)
+N = min(max(8, round(STFT_window * fs), ceil(fs / Freq_resolution)), available_samples)
+NFFT = max(N, round(fs / Freq_resolution))
+H = N - noverlap  # overlap may increase to meet Max time step
+freq, rel_time, psd = scipy.signal.spectrogram(
+    samples, fs=fs, window="hann", nperseg=N, noverlap=noverlap,
+    nfft=NFFT, scaling="density", mode="psd"
+)
+absolute_time = segment_start + rel_time
+```
+
+`W_requested` describes the setting rule; the actual `N` may be shorter if too few samples are available. `NFFT` sets the displayed frequency-grid spacing, `fs/NFFT`. Zero-padding makes that grid denser but **does not** improve the true frequency discrimination of a short recording.
+
+For display, the first time-bin color cell extends about `Δt/2` to the left of its center. Thus color starts around `start_time + W/2 − Δt/2`. With the defaults (`Freq resolution = 0.5 Hz`, `STFT window = 2 s`, `Overlap = 75%`, `Max time step = 0.5 s`), `W ≈ 2 s` and `Δt ≈ 0.5 s`: the first PSD is centered at about `1.0 s`, while its color cell starts near `0.75 s`. The initial blank area reflects the complete-window and center-timestamp convention; it **does not mean the raw LFP is missing**. For short recordings or different sampling/overlap settings, refer to the actual `window` and `Δt` shown in the plot.
+
 ### NeuroExplorer-compatible Gaussian smoothing
 
 - Filter width is the Gaussian full width at half maximum in frequency bins; default 3 bins.
@@ -193,7 +228,7 @@ A smaller time step produces denser estimates but does not shorten the STFT wind
 1. Install 64-bit Python 3.12 and select Add Python to PATH.
 2. Copy the complete project folder to Windows.
 3. Double-click `build_windows.bat`.
-4. Use `dist/TDT_Viewer_LFP_Spectrogram_v3_Windows_x64.zip`.
+4. Use `dist/TDT_Viewer_LFP_Spectrogram_v4_Windows_x64.zip`.
 
 The included `.github/workflows/build-apps.yml` can also build a Windows x64 artifact on GitHub Actions.
 
